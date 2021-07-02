@@ -1,39 +1,28 @@
 <template>
   <div class="col-large push-top">
     <h1>{{thread.title}}</h1>
-
-    <div class="post-list">
-
-      <div class="post"
-        v-for="postId in thread.posts"
-        :key="postId"
-      >
-        <div class="user-info">
-          <a href="#" class="user-name">{{users[posts[postId].userId].name}}</a>
-          <a href="#">
-            <img :src="users[posts[postId].userId].avatar" alt="" class="avatar-large">
-          </a>
-          <p class="desktop-only text-small">{{Object.keys(users[posts[postId].userId].posts).length}} posts</p>
-        </div>
-
-        <div class="post-content">
-          <div>
-            <p>
-              {{posts[postId].text}}
-            </p>
-          </div>
-        </div>
-
-        <div class="post-date text-faded">
-          {{posts[postId].publishedAt}} time units unformatted
-        </div>
+    <PostList :postIds="postIds" />
+    <form @submit.prevent="addPost">
+      <div class="form-group">
+        <textarea
+          name=""
+          id=""
+          cols="30"
+          rows="10"
+          class="form-input"
+          v-model="newPostText"
+        ></textarea>
       </div>
-    </div>
+      <div class="form-actions">
+        <button class="btn-blue">Submit Post</button>
+      </div>
+    </form>
   </div>
 </template>
 
 <script>
   import sourceData from '@/data'
+  import PostList from '@/components/PostList'
   export default {
     props: {
       id: {
@@ -42,11 +31,36 @@
       }
     },
 
+    components: {
+      PostList
+    },
+
+    computed: {
+      postIds () {
+        return Object.values(this.thread.posts)
+      }
+    },
+
+    methods: {
+      addPost () {
+        const post = {
+          text: this.newPostText,
+          threadId: this.id,
+          publishedAt: Math.floor(Date.now() / 1000),
+          userId: '7uVPJS9GHoftN58Z2MXCYDqmNAh2'
+        }
+        const postId = `fakePostId${Math.floor(Math.random() * 10000000)}`
+        this.$set(sourceData.posts, postId, post)
+        this.$set(this.thread.posts, postId, postId)
+        this.$set(sourceData.users[post.userId].posts, postId, postId)
+        this.newPostText = ''
+      }
+    },
+
     data () {
       return {
         thread: sourceData.threads[this.id],
-        posts: sourceData.posts,
-        users: sourceData.users
+        newPostText: ''
       }
     }
   }
