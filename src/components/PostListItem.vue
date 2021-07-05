@@ -17,27 +17,33 @@
     </div>
 
     <div class="post-date text-faded">
-      {{post.publishedAt}} time units unformatted
+      <AppDate :timestamp="this.post.publishedAt" />
     </div>
   </div>
 </template>
 
 <script>
-import sourceData from '@/data'
-export default {
-  props: {
-    post: {
-      required: true,
-      type: Object
-    }
-  },
-  computed: {
-    user () {
-      return sourceData.users[this.post.userId]
+  import sourceData from '@/data'
+  import AppDate from './AppDate'
+  export default {
+    props: {
+      post: {
+        required: true,
+        type: Object
+      }
     },
-    postsCount () {
-      return Object.keys(this.user.posts).length
+
+    components: {
+      AppDate
+    },
+
+    computed: {
+      user () {
+        return sourceData.users[this.post.userId]
+      },
+      postsCount () {
+        return Object.keys(this.user.posts).length
+      }
     }
   }
-}
 </script>
